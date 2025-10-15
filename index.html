@@ -1220,10 +1220,15 @@ input:checked + .slider:before {
         </div>
     </footer>
 
-    <script>
-        // Initialize EmailJS with your public key
+    <script src="config.js"></script>
+<script>
+        // Initialize EmailJS with environment variable
         (function() {
-            emailjs.init("b7Mr1ce0OLpLwXxfR"); // Your EmailJS public key
+            if (typeof CONFIG !== 'undefined' && CONFIG.EMAILJS_PUBLIC_KEY) {
+                emailjs.init(CONFIG.EMAILJS_PUBLIC_KEY);
+            } else {
+                console.error('EmailJS public key not found in configuration');
+            }
         })();
 
         // Navigation scroll effect
@@ -1273,6 +1278,12 @@ input:checked + .slider:before {
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Check if EmailJS is properly configured
+            if (!CONFIG || !CONFIG.EMAILJS_SERVICE_ID || !CONFIG.EMAILJS_TEMPLATE_ID) {
+                alert('Email service is not configured properly. Please contact me directly at veeravasanthan6@gmail.com');
+                return;
+            }
+            
             // Get form data
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
@@ -1285,8 +1296,8 @@ input:checked + .slider:before {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             submitBtn.disabled = true;
             
-            // Send email using EmailJS
-            emailjs.send("service_kjl9gr8", "template_91beyxy", {
+            // Send email using EmailJS with environment variables
+            emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
                 from_name: name,
                 from_email: email,
                 subject: subject,
@@ -1365,27 +1376,27 @@ input:checked + .slider:before {
         createParticles();
 
         // Light/Dark Mode Toggle
-const toggle = document.getElementById('theme-toggle');
+        const toggle = document.getElementById('theme-toggle');
 
-// Check for saved theme preference or default to dark
-const currentTheme = localStorage.getItem('theme') || 'dark';
+        // Check for saved theme preference or default to dark
+        const currentTheme = localStorage.getItem('theme') || 'dark';
 
-// Set the initial theme
-if (currentTheme === 'light') {
-  document.documentElement.setAttribute('data-theme', 'light');
-  toggle.checked = true;
-}
+        // Set the initial theme
+        if (currentTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            toggle.checked = true;
+        }
 
-// Toggle theme when switch is clicked
-toggle.addEventListener('change', function() {
-  if (this.checked) {
-    document.documentElement.setAttribute('data-theme', 'light');
-    localStorage.setItem('theme', 'light');
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    localStorage.setItem('theme', 'dark');
-  }
-});
-    </script>
+        // Toggle theme when switch is clicked
+        toggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+</script>
 </body>
 </html>
