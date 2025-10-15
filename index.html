@@ -1220,14 +1220,35 @@ input:checked + .slider:before {
         </div>
     </footer>
 
-    <script src="config.js"></script>
-<script>
-        // Initialize EmailJS with environment variable
+   <script>
+        // EmailJS Configuration - Uses environment variables from deployment platform
+        const getEmailJSConfig = () => {
+            // For Netlify/Vercel deployment - uses environment variables
+            if (typeof process !== 'undefined' && process.env) {
+                return {
+                    publicKey: process.env.EMAILJS_PUBLIC_KEY,
+                    serviceId: process.env.EMAILJS_SERVICE_ID,
+                    templateId: process.env.EMAILJS_TEMPLATE_ID
+                };
+            }
+            
+            // For local development - fallback to direct values
+            return {
+                publicKey: "b7Mr1ce0OLpLwXxfR",
+                serviceId: "service_kjl9gr8", 
+                templateId: "template_91beyxy"
+            };
+        };
+
+        const emailjsConfig = getEmailJSConfig();
+
+        // Initialize EmailJS
         (function() {
-            if (typeof CONFIG !== 'undefined' && CONFIG.EMAILJS_PUBLIC_KEY) {
-                emailjs.init(CONFIG.EMAILJS_PUBLIC_KEY);
+            if (emailjsConfig.publicKey) {
+                emailjs.init(emailjsConfig.publicKey);
+                console.log('EmailJS initialized with deployment environment variables');
             } else {
-                console.error('EmailJS public key not found in configuration');
+                console.error('EmailJS public key not found');
             }
         })();
 
@@ -1279,7 +1300,7 @@ input:checked + .slider:before {
             e.preventDefault();
             
             // Check if EmailJS is properly configured
-            if (!CONFIG || !CONFIG.EMAILJS_SERVICE_ID || !CONFIG.EMAILJS_TEMPLATE_ID) {
+            if (!emailjsConfig.serviceId || !emailjsConfig.templateId) {
                 alert('Email service is not configured properly. Please contact me directly at veeravasanthan6@gmail.com');
                 return;
             }
@@ -1297,7 +1318,7 @@ input:checked + .slider:before {
             submitBtn.disabled = true;
             
             // Send email using EmailJS with environment variables
-            emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
+            emailjs.send(emailjsConfig.serviceId, emailjsConfig.templateId, {
                 from_name: name,
                 from_email: email,
                 subject: subject,
